@@ -1,11 +1,17 @@
 package com.course.springboot.app.models;
 
 import com.course.springboot.app.exceptions.NotEnoughMoneyException;
+import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
+@Table(name = "accounts")
 public class Account {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String person;
     private BigDecimal balance;
@@ -48,6 +54,7 @@ public class Account {
         if (newBalance.compareTo(BigDecimal.ZERO) < 0) {
             throw new NotEnoughMoneyException("There are not enough money");
         }
+        this.balance = newBalance;
     }
 
     public void credit(BigDecimal amount) {

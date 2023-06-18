@@ -4,9 +4,12 @@ import com.course.springboot.app.models.Account;
 import com.course.springboot.app.models.Bank;
 import com.course.springboot.app.repositories.AccountRepository;
 import com.course.springboot.app.repositories.BankRepository;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
+@Service
 public class AccountServiceImpl implements AccountService {
 
     private AccountRepository accountRepository;
@@ -20,35 +23,36 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public Account findById(Long id) {
-        return accountRepository.findById(id);
+        return accountRepository.findById(id).orElseThrow();
     }
 
     @Override
     public int totalTransfersDone(Long bankId) {
-        Bank bank = bankRepository.findById(bankId);
+        Bank bank = bankRepository.findById(bankId).orElseThrow();
+
         return bank.getTotalTransfer();
     }
 
     @Override
     public BigDecimal checkBalance(Long id) {
-        Account account = accountRepository.findById(id);
+        Account account = accountRepository.findById(id).orElseThrow();
         return account.getBalance();
     }
 
     @Override
     public void transfer(Long numAccountOrigin, Long numAccountDestiny, BigDecimal amount,
                          Long bankId) {
-        Bank bank = bankRepository.findById(bankId);
+        Account accountOrigin = accountRepository.findById(numAccountOrigin).orElseThrow();
+        accountOrigin.debit(amount);
+        accountRepository.save(accountOrigin);
+
+        Account accountDestiny = accountRepository.findById(numAccountDestiny).orElseThrow();
+        accountDestiny.credit(amount);
+        accountRepository.save(accountDestiny);
+
+        Bank bank = bankRepository.findById(bankId).orElseThrow();
         int totalTrasfers = bank.getTotalTransfer();
         bank.setTotalTransfer(++totalTrasfers);
-        bankRepository.update(bank);
-
-        Account accountOrigin = accountRepository.findById(numAccountOrigin);
-        accountOrigin.debit(amount);
-        accountRepository.update(accountOrigin);
-
-        Account accountDestiny = accountRepository.findById(numAccountDestiny);
-        accountDestiny.credit(amount);
-        accountRepository.update(accountDestiny);
+        bankRepository.save(bank);
     }
 }
