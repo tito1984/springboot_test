@@ -8,6 +8,13 @@ public class TransactionDTO {
     private BigDecimal amount;
     private Long bankId;
 
+    public TransactionDTO(Long accountOriginId, Long accountDestinyId, BigDecimal amount, Long bankId) {
+        this.accountOriginId = accountOriginId;
+        this.accountDestinyId = accountDestinyId;
+        this.amount = amount;
+        this.bankId = bankId;
+    }
+
     public Long getAccountOriginId() {
         return accountOriginId;
     }
