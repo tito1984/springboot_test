@@ -10,9 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -29,8 +27,14 @@ public class AccountController {
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Account findById(@PathVariable Long id) {
-        return accountService.findById(id);
+    public ResponseEntity<?> findById(@PathVariable Long id) {
+        Account account = null;
+        try {
+            account = accountService.findById(id);
+        } catch (NoSuchElementException e) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(account);
     }
 
     @PostMapping
@@ -50,6 +54,12 @@ public class AccountController {
         response.put("message", "Transfer done");
         response.put("transaction", transactionDTO);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteById(@PathVariable Long id) {
+        accountService.deleteById(id);
     }
 
 
