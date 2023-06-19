@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -99,8 +100,26 @@ class AccountControllerTest {
                 .andExpect(jsonPath("$[1].balance").value("2000"))
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(content().json(objectMapper.writeValueAsString(accounts)));
+        verify(accountService).findAll();
     }
 
+    @Test
+    void testSave() throws Exception {
+        Account account = new Account(null, "Pedro", new BigDecimal("3000"));
+        when(accountService.save(any())).then(invocation -> {
+            Account a = invocation.getArgument(0);
+            a.setId(3L);
+            return a;
+        });
 
+        mockMvc.perform(post("/api/accounts").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(account)))
 
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.id", is(3)))
+                .andExpect(jsonPath("$.person", is("Pedro")))
+                .andExpect(jsonPath("$.balance", is(3000)));
+        verify(accountService).save(any());
+    }
 }

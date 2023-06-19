@@ -36,7 +36,7 @@ public class AccountController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Account save(@RequestBody Account account) {
-        return null;
+        return accountService.save(account);
     }
 
     @PostMapping("/transfer")

@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AccountServiceImpl implements AccountService {
@@ -24,8 +23,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Account> findAll() {
-        return null;
+        return accountRepository.findAll();
     }
 
     @Override
@@ -35,8 +35,9 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public Account save(Account account) {
-        return null;
+        return accountRepository.save(account);
     }
 
     @Override
