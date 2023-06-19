@@ -122,6 +122,5 @@ class SpringbootTestApplicationTests {
 		assertEquals("Txema", account1.getPerson());
 		assertEquals("Txema", account1.getPerson());
 		verify(accountRepository, times(2)).findById(1L);
-
 	}
 }
